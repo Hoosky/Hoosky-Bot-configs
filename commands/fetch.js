@@ -10,5 +10,5 @@ message.channel.send("(**sits**)")
 }
 
 module.exports.help = {
-  name: "Fetch"
+  name: "fetch"
 }
