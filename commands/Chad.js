@@ -7,5 +7,5 @@ message.channel.send("https://i.imgur.com/z8fZiIA.jpg")
 }
 
 module.exports.help = {
-  name: "ChadHoosky"
+  name: "chadhoosky"
 }
