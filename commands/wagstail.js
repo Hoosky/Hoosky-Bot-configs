@@ -7,5 +7,5 @@ message.channel.send("(**wags tail**)")
 }
 
 module.exports.help = {
-  name: "GoodBoy"
+  name: "goodboy"
 }
