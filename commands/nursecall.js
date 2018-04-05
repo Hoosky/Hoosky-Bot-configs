@@ -8,5 +8,5 @@ message.channel.send("Yes Mama? :3 (**wags tail**) :heart:")
 }
 
 module.exports.help = {
-  name: "Hoosky Bot!!"
+  name: "Hoosky Bot Sweetie"
 }
