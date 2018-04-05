@@ -9,7 +9,7 @@ module.exports.run = async (bot, message, args) => {
    let dogembed = new Discord.RichEmbed()
    .setColor("#5000ff")
    .setTitle(":ballot_box_with_check:")
-   .setImage(body.file);
+   .setImage(body.type);
 
    message.channel.send(dogembed)
 
