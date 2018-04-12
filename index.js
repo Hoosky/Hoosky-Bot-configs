@@ -2,9 +2,8 @@ const botconfig = require("./botconfig.json");
 const Discord = require("discord.js");
 const fs = require("fs");
 const bot = new Discord.Client();
-const sql = require("sqlite");
-sql.open("./score.sqlite");
 bot.commands = new Discord.Collection();
+let coins = require("./coins.json");
 let xp = require("./xp.json");
 let purple = botconfig.purple;
 let cooldown = new Set();
@@ -75,49 +74,57 @@ bot.on("message", async message => {
     };
   }
 
-  bot.on("message", message => {
-    if (message.author.bot) return;
-    if (message.channel.type !== "text") return;
+  if(!coins[message.author.id]){
+    coins[message.author.id] = {
+      coins: 0
+    };
+  }
 
-    if (message.content.startsWith(prefix + "ping")) {
-      message.channel.send("pong!");
-    }
+  let coinAmt = Math.floor(Math.random() * 15) + 1;
+  let baseAmt = Math.floor(Math.random() * 15) + 1;
+  console.log(`${coinAmt} ; ${baseAmt}`);
 
-    sql.get(`SELECT * FROM scores WHERE userId ="${message.author.id}"`).then(row => {
-      if (!row) {
-        sql.run("INSERT INTO scores (userId, points, level) VALUES (?, ?, ?)", [message.author.id, 1, 0]);
-      } else {
-        let curLevel = Math.floor(0.1 * Math.sqrt(row.points + 1));
-        if (curLevel > row.level) {
-          row.level = curLevel;
-          sql.run(`UPDATE scores SET points = ${row.points + 1}, level = ${row.level} WHERE userId = ${message.author.id}`);
-          message.reply(`You've leveled up to level **${curLevel}**! Ain't that dandy?`);
-        }
-        sql.run(`UPDATE scores SET points = ${row.points + 1} WHERE userId = ${message.author.id}`);
-      }
-    }).catch(() => {
-      console.error;
-      sql.run("CREATE TABLE IF NOT EXISTS scores (userId TEXT, points INTEGER, level INTEGER)").then(() => {
-        sql.run("INSERT INTO scores (userId, points, level) VALUES (?, ?, ?)", [message.author.id, 1, 0]);
-      });
-    });
+  if(coinAmt === baseAmt){
+    coins[message.author.id] = {
+      coins: coins[message.author.id].coins + coinAmt
+    };
+  fs.writeFile("./coins.json", JSON.stringify(coins), (err) => {
+    if (err) console.log(err)
+  });
+  let coinEmbed = new Discord.RichEmbed()
+  .setAuthor(message.author.username)
+  .setColor("#0000FF")
+  .addField("💸", `${coinAmt} coins added!`);
 
-    if (!message.content.startsWith(prefix)) return;
+  message.channel.send(coinEmbed).then(msg => {msg.delete(5000)});
+  }
 
-    if (message.content.startsWith(prefix + "level")) {
-      sql.get(`SELECT * FROM scores WHERE userId ="${message.author.id}"`).then(row => {
-        if (!row) return message.reply("Your current level is 0");
-        message.reply(`Your current level is ${row.level}`);
-      });
-    } else
+  let xpAdd = Math.floor(Math.random() * 7) + 8;
+  console.log(xpAdd);
 
-    if (message.content.startsWith(prefix + "points")) {
-      sql.get(`SELECT * FROM scores WHERE userId ="${message.author.id}"`).then(row => {
-        if (!row) return message.reply("sadly you do not have any points yet!");
-        message.reply(`you currently have ${row.points} points, good going!`);
-      });
-    }
+  if(!xp[message.author.id]){
+    xp[message.author.id] = {
+      xp: 0,
+      level: 1
+    };
+  }
 
+
+  let curxp = xp[message.author.id].xp;
+  let curlvl = xp[message.author.id].level;
+  let nxtLvl = xp[message.author.id].level * 300;
+  xp[message.author.id].xp =  curxp + xpAdd;
+  if(nxtLvl <= xp[message.author.id].xp){
+    xp[message.author.id].level = curlvl + 1;
+    let lvlup = new Discord.RichEmbed()
+    .setTitle("Level Up!")
+    .setColor(purple)
+    .addField("New Level", curlvl + 1);
+
+    message.channel.send(lvlup).then(msg => {msg.delete(5000)});
+  }
+  fs.writeFile("./xp.json", JSON.stringify(xp), (err) => {
+    if(err) console.log(err)
   });
   let prefix = prefixes[message.guild.id].prefixes;
   if(!message.content.startsWith(prefix)) return;
