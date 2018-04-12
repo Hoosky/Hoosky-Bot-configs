@@ -10,7 +10,7 @@ module.exports.run = async (bot, message, args) => {
   if (!cUser) return message.reply("Could not find set topic.");
   let topic = topic [cUser.id].topic;
 
-  message.reply(`The current topic is: ${topic}`);
+  message.reply(`The current topic is: ${settopic}`);
 
 
 }
