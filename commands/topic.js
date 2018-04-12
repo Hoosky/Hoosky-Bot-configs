@@ -3,7 +3,7 @@ const fs = require("fs");
 
 module.exports.run = async (bot, message, args) => {
 
-  if(!message.member.hasPermission("MANAGE_SERVER")) return message.reply("Ah! Ah! Ah! You do not have the power to do that!");
+  if(!message.member.hasPermission("MANAGE_MESSAGES")) return message.reply("Ah! Ah! Ah! You do not have the power to do that!");
   if(!args[0] || args[0 == "help"]) return message.reply("How to use: +settopic <new topic>");
 
   let topic = JSON.parse(fs.readFileSync("./settopic.json", "utf8"));
