@@ -57,61 +57,49 @@ bot.on("channelCreate", async channel =>{
 
 });
 
+const prefix = "+";
+client.on("message", message => {
+  if (message.author.bot) return;
+  if (message.channel.type !== "text") return;
 
-bot.on("message", async message => {
-
-  if(message.author.bot) return;
-  if(message.channel.type === "dm") return;
-
-  let prefixes = JSON.parse(fs.readFileSync("./prefixes.json", "utf8"));
-  if(!prefixes[message.guild.id]){
-    prefixes[message.guild.id] = {
-      prefixes: botconfig.prefix
-    };
+  if (message.content.startsWith(prefix + "ping")) {
+    message.channel.send("pong!");
   }
 
-  bot.on("message", message => {
-    if (message.author.bot) return;
-    if (message.channel.type !== "text") return;
-
-    if (message.content.startsWith(prefix + "ping")) {
-      message.channel.send("pong!");
-    }
-
-    sql.get(`SELECT * FROM scores WHERE userId ="${message.author.id}"`).then(row => {
-      if (!row) {
-        sql.run("INSERT INTO scores (userId, points, level) VALUES (?, ?, ?)", [message.author.id, 1, 0]);
-      } else {
-        let curLevel = Math.floor(0.1 * Math.sqrt(row.points + 1));
-        if (curLevel > row.level) {
-          row.level = curLevel;
-          sql.run(`UPDATE scores SET points = ${row.points + 1}, level = ${row.level} WHERE userId = ${message.author.id}`);
-          message.reply(`You've leveled up to level **${curLevel}**! Ain't that dandy?`);
-        }
-        sql.run(`UPDATE scores SET points = ${row.points + 1} WHERE userId = ${message.author.id}`);
+  sql.get(`SELECT * FROM scores WHERE userId ="${message.author.id}"`).then(row => {
+    if (!row) {
+      sql.run("INSERT INTO scores (userId, points, level) VALUES (?, ?, ?)", [message.author.id, 1, 0]);
+    } else {
+      let curLevel = Math.floor(0.1 * Math.sqrt(row.points + 1));
+      if (curLevel > row.level) {
+        row.level = curLevel;
+        sql.run(`UPDATE scores SET points = ${row.points + 1}, level = ${row.level} WHERE userId = ${message.author.id}`);
+        message.reply(`You've leveled up to level **${curLevel}**! Ain't that dandy?`);
       }
-    }).catch(() => {
-      console.error;
-      sql.run("CREATE TABLE IF NOT EXISTS scores (userId TEXT, points INTEGER, level INTEGER)").then(() => {
-        sql.run("INSERT INTO scores (userId, points, level) VALUES (?, ?, ?)", [message.author.id, 1, 0]);
-      });
-    });
-
-    if (!message.content.startsWith(prefix)) return;
-
-    if (message.content.startsWith(prefix + "level")) {
-      sql.get(`SELECT * FROM scores WHERE userId ="${message.author.id}"`).then(row => {
-        if (!row) return message.reply("Your current level is 0");
-        message.reply(`Your current level is ${row.level}`);
-      });
-    } else
-
-    if (message.content.startsWith(prefix + "points")) {
-      sql.get(`SELECT * FROM scores WHERE userId ="${message.author.id}"`).then(row => {
-        if (!row) return message.reply("sadly you do not have any points yet!");
-        message.reply(`you currently have ${row.points} points, good going!`);
-      });
+      sql.run(`UPDATE scores SET points = ${row.points + 1} WHERE userId = ${message.author.id}`);
     }
+  }).catch(() => {
+    console.error;
+    sql.run("CREATE TABLE IF NOT EXISTS scores (userId TEXT, points INTEGER, level INTEGER)").then(() => {
+      sql.run("INSERT INTO scores (userId, points, level) VALUES (?, ?, ?)", [message.author.id, 1, 0]);
+    });
+  });
+
+  if (!message.content.startsWith(prefix)) return;
+
+  if (message.content.startsWith(prefix + "level")) {
+    sql.get(`SELECT * FROM scores WHERE userId ="${message.author.id}"`).then(row => {
+      if (!row) return message.reply("Your current level is 0");
+      message.reply(`Your current level is ${row.level}`);
+    });
+  } else
+
+  if (message.content.startsWith(prefix + "points")) {
+    sql.get(`SELECT * FROM scores WHERE userId ="${message.author.id}"`).then(row => {
+      if (!row) return message.reply("sadly you do not have any points yet!");
+      message.reply(`you currently have ${row.points} points, good going!`);
+    });
+  }
 
   });
   let prefix = prefixes[message.guild.id].prefixes;
