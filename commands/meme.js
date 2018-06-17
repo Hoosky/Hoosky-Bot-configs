@@ -4,7 +4,7 @@ const superagent = require("superagent");
 module.exports.run = async (bot, message, args) => {
 
    let {body} = await superagent
-   .get('https://api.imgur.com/3/g/memes/')
+   .get('https://api.imgur.com/3/https://i.imgur.com/LTAe2j3.png')
 
    let dogembed = new Discord.RichEmbed()
    .setColor("#5000ff")
@@ -16,5 +16,5 @@ module.exports.run = async (bot, message, args) => {
 }
 
 module.exports.help = {
-  name: "+meme"
+  name: "+Hspray"
 }
