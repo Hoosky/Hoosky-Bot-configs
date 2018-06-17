@@ -4,7 +4,7 @@ const superagent = require("superagent");
 module.exports.run = async (bot, message, args) => {
 
    let {body} = await superagent
-   .get('https://api.imgur.com/3/https://i.imgur.com/LTAe2j3.png')
+   .get('https://api.imgur.com/3/LTAe2j3.png')
 
    let dogembed = new Discord.RichEmbed()
    .setColor("#5000ff")
