@@ -1,4 +1,4 @@
-const agree = "white_check_mark";
+const agree = ":white_check_mark:";
 const disagree = ":x:";
 
 module.exports.run = async (bot, message, args) => {
