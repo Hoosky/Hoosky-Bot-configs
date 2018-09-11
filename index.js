@@ -3,8 +3,6 @@ const Discord = require("discord.js");
 const fs = require("fs");
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
-let coins = require("./coins.json");
-let xp = require("./xp.json");
 let purple = botconfig.purple;
 let cooldown = new Set();
 let cdseconds = 5;
@@ -39,7 +37,7 @@ bot.on("ready", async () => {
 bot.on("guildMemberAdd", async member => {
   console.log(`${member.id} joined the server`);
 
-  let welcomechannel = member.guild.channels.find(`name`, "📜-user-logs");
+  let welcomechannel = member.guild.channels.find(`name`, "📣-welcome-notif");
   welcomechannel.send(`${member} has joined the Hoosky Chat! Welcome! 🐺`);
 });
 
@@ -47,7 +45,7 @@ bot.on("guildMemberRemove", async member => {
 
   console.log(`${member.id} left the server`);
 
-  let welcomechannel = member.guild.channels.find(`name`, "📜-user-logs");
+  let welcomechannel = member.guild.channels.find(`name`, "📣-welcome-notif");
   welcomechannel.send(`${member} has left the Hoosky Chat. We will miss you! 💔`);
 
 });
@@ -60,82 +58,6 @@ bot.on("channelCreate", async channel =>{
   sChannel.send(`${channel} has been created`);
 
 });
-
-
-bot.on("message", async message => {
-
-  if(message.author.bot) return;
-  if(message.channel.type === "dm") return;
-
-  let prefixes = JSON.parse(fs.readFileSync("./prefixes.json", "utf8"));
-  if(!prefixes[message.guild.id]){
-    prefixes[message.guild.id] = {
-      prefixes: botconfig.prefix
-    };
-  }
-
-  if(!coins[message.author.id]){
-    coins[message.author.id] = {
-      coins: 0
-    };
-  }
-
-  let coinAmt = Math.floor(Math.random() * 15) + 1;
-  let baseAmt = Math.floor(Math.random() * 15) + 1;
-  console.log(`${coinAmt} ; ${baseAmt}`);
-
-  if(coinAmt === baseAmt){
-    coins[message.author.id] = {
-      coins: coins[message.author.id].coins + coinAmt
-    };
-  fs.writeFile("./coins.json", JSON.stringify(coins), (err) => {
-    if (err) console.log(err)
-  });
-  let coinEmbed = new Discord.RichEmbed()
-  .setAuthor(message.author.username)
-  .setColor("#0000FF")
-  .addField("💸", `${coinAmt} coins added!`);
-
-  message.channel.send(coinEmbed).then(msg => {msg.delete(5000)});
-  }
-
-  let xpAdd = Math.floor(Math.random() * 7) + 8;
-  console.log(xpAdd);
-
-  if(!xp[message.author.id]){
-    xp[message.author.id] = {
-      xp: 0,
-      level: 1
-    };
-  }
-
-
-  let curxp = xp[message.author.id].xp;
-  let curlvl = xp[message.author.id].level;
-  let nxtLvl = xp[message.author.id].level * 300;
-  xp[message.author.id].xp =  curxp + xpAdd;
-  if(nxtLvl <= xp[message.author.id].xp){
-    xp[message.author.id].level = curlvl + 1;
-    let lvlup = new Discord.RichEmbed()
-    .setTitle("Level Up!")
-    .setColor(purple)
-    .addField("New Level", curlvl + 1);
-
-    message.channel.send(lvlup).then(msg => {msg.delete(5000)});
-  }
-  fs.writeFile("./xp.json", JSON.stringify(xp), (err) => {
-    if(err) console.log(err)
-  });
-  let prefix = prefixes[message.guild.id].prefixes;
-  if(!message.content.startsWith(prefix)) return;
-  if(cooldown.has(message.author.id)){
-    message.delete();
-    return message.reply("You have to wait 5 seconds between commands.")
-  }
-  if(!message.member.hasPermission("ADMINISTRATOR")){
-    cooldown.add(message.author.id);
-  }
-
 
   let messageArray = message.content.split(" ");
   let cmd = messageArray[0];
