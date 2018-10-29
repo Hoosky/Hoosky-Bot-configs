@@ -49,7 +49,7 @@ bot.on('message', function() {
           .addField("ETA Next Backup:", message.channel.send("10 Hours"))
           .addField("Time Took To Backup:", message.channel.send("0.55ms"))
         
-          return message.channel.send(serverembed);
+          return message.channel.send(💬-mainchat);
         }
       }, 1 * 1000); 
     }  
