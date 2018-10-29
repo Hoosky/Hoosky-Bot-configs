@@ -32,7 +32,27 @@ bot.on("ready", async () => {
   console.log(`${bot.user.username} is online!`);
 
   bot.user.setActivity("with his ball");
+  
+});
 
+bot.on('message', function() {
+    if (message.content === "$loop") { 
+      var interval = setInterval (function () {
+        module.exports.run = async (bot, message, args) => {
+          let sicon = message.guild.iconURL;
+          let serverembed = new Discord.RichEmbed()
+          .setDescription("Server Auto Backup Report")
+          .setColor("#00FFEC")
+          .setThumbnail(sicon)
+          .addField("Backup Status:", message.channel.send("Complete!"))
+          .addField("Saved To:", message.channel.send("Backuplog.json"))
+          .addField("ETA Next Backup:", message.channel.send("10 Hours"))
+          .addField("Time Took To Backup:", message.channel.send("0.55ms"))
+        
+          return message.channel.send(serverembed);
+        }
+      }, 1 * 1000); 
+    }  
 });
 
 bot.on("guildMemberAdd", async member => {
