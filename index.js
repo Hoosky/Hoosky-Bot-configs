@@ -35,6 +35,18 @@ bot.on("ready", async () => {
 
 });
 
+bot.on('ready', function() {
+    console.log(bot.user.username);
+});
+
+bot.on('message', function() {
+    if (message.content === "Server Backup Complete! ✅") { 
+      var interval = setInterval (function () {
+        message.channel.send("💬-mainchat")
+      }, 1 * 1000); 
+    }
+});
+
 bot.on("guildMemberAdd", async member => {
   console.log(`${member.id} joined the server`);
 
